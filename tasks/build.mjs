@@ -1,5 +1,4 @@
 import * as esbuild from "esbuild";
-import ignorePlugin from "esbuild-plugin-ignore";
 
 (async () => {
   try {
@@ -7,17 +6,8 @@ import ignorePlugin from "esbuild-plugin-ignore";
       entryPoints: ["src/index.ts"],
       bundle: true,
       format: "esm",
-      // minify: true,
-      platform: "node",
+      minify: true,
       outfile: "./dist/index.js",
-      plugins: [
-        ignorePlugin([
-          {
-            resourceRegExp: /^\.\/js-compute-runtime-cli\.js$/,
-            contextRegExp: /@fastly\/js-compute/,
-          }
-        ])
-      ],
     });
   } catch (err) {
     console.error(err);

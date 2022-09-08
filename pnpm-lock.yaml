@@ -4,9 +4,7 @@ specifiers:
   '@fastly/js-compute': ^0.5.2
   '@graphql-tools/schema': ^9.0.3
   '@types/node': ^18.7.16
-  D: ^1.0.0
   esbuild: ^0.15.7
-  esbuild-plugin-ignore: ^1.1.1
   graphql: ^16.6.0
   rimraf: ^3.0.2
   typescript: ^4.8.2
@@ -14,13 +12,11 @@ specifiers:
 dependencies:
   '@fastly/js-compute': 0.5.2_typescript@4.8.2
   '@graphql-tools/schema': 9.0.3_graphql@16.6.0
-  D: 1.0.0
   graphql: 16.6.0
 
 devDependencies:
   '@types/node': 18.7.16
   esbuild: 0.15.7
-  esbuild-plugin-ignore: 1.1.1
   rimraf: 3.0.2
   typescript: 4.8.2
 
@@ -79,11 +75,6 @@ packages:
   /@types/node/18.7.16:
     resolution: {integrity: sha512-EQHhixfu+mkqHMZl1R2Ovuvn47PUw18azMJOTwSZr9/fhzHNGXAJ0ma0dayRVchprpCj0Kc1K1xKoWaATWF1qg==}
     dev: true
-
-  /D/1.0.0:
-    resolution: {integrity: sha512-nQvrCBu7K2pSSEtIM0EEF03FVjcczCXInMt3moLNFbjlWx6bZrX72uT6/1uAXDbnzGUAx9gTyDiQ+vrFi663oA==}
-    deprecated: Package no longer supported. Contact support@npmjs.com for more info.
-    dev: false
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -240,10 +231,6 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
-
-  /esbuild-plugin-ignore/1.1.1:
-    resolution: {integrity: sha512-RVh45nlpiFiBJuw687Qh935VQvSzIA4rkBBytYYb5M3bTQcxokULQFQW6Sj0YHbFR6thNWmQYFkBghEQt5D3jg==}
-    dev: true
 
   /esbuild-sunos-64/0.15.7:
     resolution: {integrity: sha512-8CDI1aL/ts0mDGbWzjEOGKXnU7p3rDzggHSBtVryQzkSOsjCHRVe0iFYUuhczlxU1R3LN/E7HgUO4NXzGGP/Ag==}
