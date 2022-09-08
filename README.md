@@ -1,10 +1,10 @@
 # graphql-edge
 
-Execute GraphQL on the edge!
+Execute GraphQL on the edge.
 
 ## Installation
 
-Install this librart as dependency via your favorite package manage :)
+Install this library as dependency via your favorite package manager :)
 
 ```shell
 $ [npm|yarn|pnpm] install graphql-edge
@@ -12,9 +12,9 @@ $ [npm|yarn|pnpm] install graphql-edge
 
 ## Usage
 
-Following example works on `Fastly Compute@Edge`.
+Following example works on [Fastly Compute@Edge](https://developer.fastly.com/learning/compute/javascript/).
 
-A GraphQL schema defines at `schema.graphql`:
+A GraphQL schema defines at *schema.graphql*:
 
 ```graphql
 type Book {
@@ -30,8 +30,6 @@ type Query {
 And then server implementation is:
 
 ```ts
-import { graphqlHandler } from "graphql-edgew
-
 import { graphqlHandler } from "graphql-edge";
 import schema from "./schema.graphql";
 
