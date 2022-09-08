@@ -1,0 +1,9 @@
+# This file describes a Fastly Compute@Edge package. To learn more visit:
+# https://developer.fastly.com/reference/fastly-toml/
+
+authors = [""]
+description = "An empty application template for the Fastly Compute@Edge environment which simply returns a 200 OK response."
+language = "javascript"
+manifest_version = 2
+name = "graphql-edge-example"
+service_id = ""
