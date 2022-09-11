@@ -2,7 +2,7 @@
     "author": "oss@fastly.com",
     "dependencies": {
         "@fastly/js-compute": "^0.3.0",
-        "graphql-edge": "link:.."
+        "graphql-edge": "../"
     },
     "devDependencies": {
         "core-js": "^3.19.1",
