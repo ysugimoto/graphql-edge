@@ -1,6 +1,6 @@
 /// <reference types="@fastly/js-compute" />
 import { graphqlHandler } from "graphql-edge";
-import schema from "../schema.graphql";
+import schema from "../../_misc/schema.graphql";
 
 addEventListener("fetch", (event: FetchEvent) => event.respondWith(handleRequest(event)));
 
