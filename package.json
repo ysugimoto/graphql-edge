@@ -1,6 +1,6 @@
 {
   "name": "graphql-edge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -63,6 +63,9 @@
     }
   },
   "lint-staged": {
-    "*.ts": ["eslint --fix", "git add"]
+    "*.ts": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
