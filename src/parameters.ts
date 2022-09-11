@@ -1,3 +1,5 @@
+import { MethodNotAllowedError } from "./error";
+
 export type GraphQLParameters = {
   query: string | null;
   variables: { readonly [key: string]: string } | null;
@@ -46,7 +48,7 @@ async function parseFromPostRequest(request: Request): Promise<GraphQLParameters
         throw new Error("Invalid JSON body");
       }
     case contentTypePost:
-      const { searchParams } = new URL(request.url);
+      const searchParams = new URLSearchParams(body);
       return {
         query: searchParams.get("query"),
         variables: searchParams.has("variables") ? JSON.parse(searchParams.get("variables")!) : null,
@@ -70,6 +72,6 @@ export async function parseGraphQLParameters(request: Request): Promise<GraphQLP
     case "POST":
       return parseFromPostRequest(request);
     default:
-      throw new Error("Method Not Allowed");
+      throw new MethodNotAllowedError(`${request.method.toUpperCase()} is not Allowed`);
   }
 }

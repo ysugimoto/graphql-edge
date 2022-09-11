@@ -1,4 +1,3 @@
-/// <reference types="@fastly/js-compute" />
 import type {
   FormattedExecutionResult,
 } from "graphql";
@@ -6,6 +5,13 @@ import {
   makeExecutableSchema,
 } from "@graphql-tools/schema";
 import { parseGraphQLParameters } from "./parameters";
+import {
+  QueryNotProvidedError,
+  SchemaValidationError,
+  QueryValidationError,
+  UnexpectedOperationError,
+  MethodNotAllowedError,
+} from "./error";
 import {
   formatError,
   validateSchema,
@@ -31,26 +37,26 @@ export function graphqlHandler({
     typeDefs,
     resolvers,
   });
+  const schemaErrors = validateSchema(schema);
+  if (schemaErrors.length > 0) {
+    throw new SchemaValidationError(`Schema Validation error: ${JSON.stringify(schemaErrors)}`);
+  }
 
   return async (request: Request) => {
     try {
       const { query, variables, operationName } = await parseGraphQLParameters(request);
       if (query === "") {
-        throw new Error("query is not provided");
-      }
-      const schemaErrors = validateSchema(schema);
-      if (schemaErrors.length > 0) {
-        throw new Error(`Schema Validation error: ${JSON.stringify(schemaErrors)}`);
+        throw new QueryNotProvidedError("Query is not provided in request");
       }
       const doc = parse(new Source(query ?? "", "GraphQL request"));
       const docErrors = validate(schema, doc, specifiedRules);
       if (docErrors.length > 0) {
-        throw new Error(`GraphQL Validation error: ${JSON.stringify(schemaErrors)}`);
+        throw new QueryValidationError(`GraphQL Validation error: ${JSON.stringify(schemaErrors)}`);
       }
       if (request.method === "GET") {
         const op = getOperationAST(doc, operationName);
         if (op && op.operation !== "query") {
-          throw new Error(`Operation ${op.operation} can accept only from POST request`);
+          throw new UnexpectedOperationError(`Operation ${op.operation} can accept only from POST request`);
         }
       }
 
@@ -75,8 +81,15 @@ export function graphqlHandler({
       });
     } catch (err) {
       const message = (err instanceof Error) ? err.message : err as string;
+      let statusCode = 500;
+      if (err instanceof QueryNotProvidedError || err instanceof QueryValidationError || err instanceof UnexpectedOperationError) {
+        statusCode = 400;
+      } else if (err instanceof MethodNotAllowedError) {
+        statusCode = 405;
+      }
+
       return new Response(message, {
-        status: 500,
+        status: statusCode,
         headers: new Headers({
           "Content-Type": "text/plain"
         }),
