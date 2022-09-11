@@ -4,6 +4,7 @@ runs:
     - uses: actions/setup-node@v3
       with:
         node-version-file: ".node-version"
+        registry-url: "https://registry.npmjs.org"
     - name: install dependencies
       shell: bash
       run: npm install

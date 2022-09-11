@@ -22,4 +22,6 @@ jobs:
           path: ./
       - run: |
           npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secres.NPM_TOKEN }}
 
