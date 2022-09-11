@@ -1,7 +1,6 @@
 import { parseGraphQLParameters } from "./parameters";
 
 describe("GET parseGraphQLParameters", () => {
-
   it("pass for valid request", async () => {
     const sp = new URLSearchParams();
     sp.set("query", "query");
@@ -38,13 +37,12 @@ describe("GET parseGraphQLParameters", () => {
 });
 
 describe("POST parseGraphQLParameters", () => {
-
   it("pass for application/graphql", async () => {
     const req = <Request>{
       url: `http://localhost/graphql`,
       method: "POST",
       headers: <Headers>{
-        get: (name: string) => "application/graphql"
+        get: (name: string) => "application/graphql",
       },
       text: async () => "foo",
     };
@@ -63,13 +61,14 @@ describe("POST parseGraphQLParameters", () => {
       url: `http://localhost/graphql`,
       method: "POST",
       headers: <Headers>{
-        get: (name: string) => "application/json"
+        get: (name: string) => "application/json",
       },
-      text: async () => JSON.stringify({
-        query: "query",
-        variables: { foo: "bar" },
-        operationName: "op",
-      }),
+      text: async () =>
+        JSON.stringify({
+          query: "query",
+          variables: { foo: "bar" },
+          operationName: "op",
+        }),
     };
 
     const params = await parseGraphQLParameters(req);
@@ -86,9 +85,9 @@ describe("POST parseGraphQLParameters", () => {
       url: `http://localhost/graphql`,
       method: "POST",
       headers: <Headers>{
-        get: (name: string) => "application/json"
+        get: (name: string) => "application/json",
       },
-      text: async () => "InvalidJSON"
+      text: async () => "InvalidJSON",
     };
 
     expect(parseGraphQLParameters(req)).rejects.toBeInstanceOf(Error);
@@ -104,7 +103,7 @@ describe("POST parseGraphQLParameters", () => {
       url: `http://localhost/graphql`,
       method: "POST",
       headers: <Headers>{
-        get: (name: string) => "application/x-www-form-urlencoded"
+        get: (name: string) => "application/x-www-form-urlencoded",
       },
       text: async () => sp.toString(),
     };
@@ -123,7 +122,7 @@ describe("POST parseGraphQLParameters", () => {
       url: `http://localhost/graphql`,
       method: "POST",
       headers: <Headers>{
-        get: (name: string) => "application/unknown"
+        get: (name: string) => "application/unknown",
       },
       text: async () => Promise.resolve("foo"),
     };
@@ -136,5 +135,4 @@ describe("POST parseGraphQLParameters", () => {
       raw: false,
     });
   });
-
 });

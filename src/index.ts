@@ -1,9 +1,5 @@
-import type {
-  FormattedExecutionResult,
-} from "graphql";
-import {
-  makeExecutableSchema,
-} from "@graphql-tools/schema";
+import type { FormattedExecutionResult } from "graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import { parseGraphQLParameters } from "./parameters";
 import {
   QueryNotProvidedError,
@@ -25,38 +21,46 @@ import {
 
 export type Option = {
   typeDefs: string;
-  resolvers: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  resolvers: Record<string, any>;
 };
 
 export function graphqlHandler({
   typeDefs,
   resolvers,
 }: Option): (request: Request) => Promise<Response> {
-
   const schema = makeExecutableSchema({
     typeDefs,
     resolvers,
   });
   const schemaErrors = validateSchema(schema);
   if (schemaErrors.length > 0) {
-    throw new SchemaValidationError(`Schema Validation error: ${JSON.stringify(schemaErrors)}`);
+    throw new SchemaValidationError(
+      `Schema Validation error: ${JSON.stringify(schemaErrors)}`
+    );
   }
 
   return async (request: Request) => {
     try {
-      const { query, variables, operationName } = await parseGraphQLParameters(request);
+      const { query, variables, operationName } = await parseGraphQLParameters(
+        request
+      );
       if (query === "") {
         throw new QueryNotProvidedError("Query is not provided in request");
       }
       const doc = parse(new Source(query ?? "", "GraphQL request"));
       const docErrors = validate(schema, doc, specifiedRules);
       if (docErrors.length > 0) {
-        throw new QueryValidationError(`GraphQL Validation error: ${JSON.stringify(schemaErrors)}`);
+        throw new QueryValidationError(
+          `GraphQL Validation error: ${JSON.stringify(schemaErrors)}`
+        );
       }
       if (request.method === "GET") {
         const op = getOperationAST(doc, operationName);
         if (op && op.operation !== "query") {
-          throw new UnexpectedOperationError(`Operation ${op.operation} can accept only from POST request`);
+          throw new UnexpectedOperationError(
+            `Operation ${op.operation} can accept only from POST request`
+          );
         }
       }
 
@@ -76,13 +80,17 @@ export function graphqlHandler({
       return new Response(JSON.stringify(formatted), {
         status: 200,
         headers: new Headers({
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         }),
       });
     } catch (err) {
-      const message = (err instanceof Error) ? err.message : err as string;
+      const message = err instanceof Error ? err.message : (err as string);
       let statusCode = 500;
-      if (err instanceof QueryNotProvidedError || err instanceof QueryValidationError || err instanceof UnexpectedOperationError) {
+      if (
+        err instanceof QueryNotProvidedError ||
+        err instanceof QueryValidationError ||
+        err instanceof UnexpectedOperationError
+      ) {
         statusCode = 400;
       } else if (err instanceof MethodNotAllowedError) {
         statusCode = 405;
@@ -91,7 +99,7 @@ export function graphqlHandler({
       return new Response(message, {
         status: statusCode,
         headers: new Headers({
-          "Content-Type": "text/plain"
+          "Content-Type": "text/plain",
         }),
       });
     }

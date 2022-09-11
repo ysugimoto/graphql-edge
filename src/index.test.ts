@@ -8,8 +8,8 @@ const resolvers = {
         { id: 1, title: "book01" },
         { id: 2, title: "book02" },
       ];
-    }
-  }
+    },
+  },
 };
 
 const schema = `
@@ -32,7 +32,6 @@ query GetBooks {
 `;
 
 describe("graphqlHandler test", () => {
-
   it("throws error in invalid schema", () => {
     expect(() => {
       graphqlHandler({ typeDefs: "foo", resolvers });
@@ -41,7 +40,8 @@ describe("graphqlHandler test", () => {
 
   it("Schema validation error", () => {
     expect(() => {
-      graphqlHandler({ typeDefs: `
+      graphqlHandler({
+        typeDefs: `
 type Book {
   id: !Int
   title: String!
@@ -50,14 +50,18 @@ type Book {
 type Query {
   books: [Book]!
 }
-`, resolvers });
+`,
+        resolvers,
+      });
     }).toThrowError(GraphQLError);
   });
 
-  it ("create event handler successfully", () => {
-    expect(graphqlHandler({
-      typeDefs: schema,
-      resolvers,
-    })).toEqual(expect.any(Function));
+  it("create event handler successfully", () => {
+    expect(
+      graphqlHandler({
+        typeDefs: schema,
+        resolvers,
+      })
+    ).toEqual(expect.any(Function));
   });
 });

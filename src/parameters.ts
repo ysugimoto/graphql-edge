@@ -8,23 +8,26 @@ export type GraphQLParameters = {
 };
 
 const contentTypeGraphQL = "application/graphql";
-const contentTypeJSON    = "application/json";
-const contentTypePost    = "application/x-www-form-urlencoded";
+const contentTypeJSON = "application/json";
+const contentTypePost = "application/x-www-form-urlencoded";
 
 function parseFromGetRequest(request: Request): GraphQLParameters {
   const { searchParams } = new URL(request.url);
+  const variables = searchParams.get("variables");
 
   const params: GraphQLParameters = {
     query: searchParams.get("query"),
-    variables: searchParams.has("variables") ? JSON.parse(searchParams.get("variables")!) : null,
+    variables: variables ? JSON.parse(variables) : null,
     operationName: searchParams.get("operationName"),
     raw: searchParams.has("raw"),
-  }
+  };
 
   return params;
 }
 
-async function parseFromPostRequest(request: Request): Promise<GraphQLParameters> {
+async function parseFromPostRequest(
+  request: Request
+): Promise<GraphQLParameters> {
   const body = await request.text();
 
   switch (request.headers.get("content-type")) {
@@ -48,10 +51,14 @@ async function parseFromPostRequest(request: Request): Promise<GraphQLParameters
         throw new Error("Invalid JSON body");
       }
     case contentTypePost:
+      /* eslint-disable no-case-declarations */
       const searchParams = new URLSearchParams(body);
+      const variables = searchParams.get("variables");
+      /* eslint-enable no-case-declarations */
+
       return {
         query: searchParams.get("query"),
-        variables: searchParams.has("variables") ? JSON.parse(searchParams.get("variables")!) : null,
+        variables: variables ? JSON.parse(variables) : null,
         operationName: searchParams.get("operationName"),
         raw: false,
       };
@@ -65,13 +72,17 @@ async function parseFromPostRequest(request: Request): Promise<GraphQLParameters
   }
 }
 
-export async function parseGraphQLParameters(request: Request): Promise<GraphQLParameters> {
+export async function parseGraphQLParameters(
+  request: Request
+): Promise<GraphQLParameters> {
   switch (request.method.toUpperCase()) {
     case "GET":
       return parseFromGetRequest(request);
     case "POST":
       return parseFromPostRequest(request);
     default:
-      throw new MethodNotAllowedError(`${request.method.toUpperCase()} is not Allowed`);
+      throw new MethodNotAllowedError(
+        `${request.method.toUpperCase()} is not Allowed`
+      );
   }
 }
