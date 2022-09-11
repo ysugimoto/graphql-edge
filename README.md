@@ -31,7 +31,7 @@ And then server implementation is:
 
 ```ts
 import { graphqlHandler } from "graphql-edge";
-import schema from "./schema.graphql";
+import schema from "../../_misc/schema.graphql";
 
 addEventListener("fetch", (event: FetchEvent) => event.respondWith(handleRequest(event)));
 
@@ -83,7 +83,10 @@ $ curl -v http://localhost:7676/graphql -H "Content-Type: application/graphql" -
 # => {"data":{"books":[{"id":1,"title":"book01"},{"id":2,"title":"book02"}]}}
 ```
 
-See [example](https://github.com/ysugimoto/blob/main/example) in detail, and Cloudflare Workers is also supported.
+See examples in detail:
+
+- [Fastly Compute@Edge](https://github.com/ysugimoto/blob/main/example/fastly)
+- [Cloudflare Workers](https://github.com/ysugimoto/blob/main/example/cloudflare) 
 
 ## Features
 
