@@ -2,12 +2,13 @@
     "author": "oss@fastly.com",
     "dependencies": {
         "@fastly/js-compute": "^0.3.0",
-        "graphql-edge": "../"
+        "graphql-edge": "link:.."
     },
     "devDependencies": {
         "core-js": "^3.19.1",
+        "graphql": ">=0.11.7",
         "raw-loader": "^4.0.2",
-        "ts-loader": "^9.3.1",
+        "ts-loader": ">=4.4.1",
         "typescript": "^4.8.2",
         "webpack": "^5.64.0",
         "webpack-cli": "^4.9.1",
@@ -24,5 +25,9 @@
         "deploy": "npm run build && fastly compute deploy",
         "prebuild": "webpack"
     },
-    "version": "0.3.0"
+    "version": "0.3.0",
+    "peerDependencies": {
+        "graphql": ">=0.11.7",
+        "ts-loader": ">=4.4.1"
+    }
 }

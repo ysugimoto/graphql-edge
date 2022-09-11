@@ -45,6 +45,7 @@ export function graphqlHandler({
       const { query, variables, operationName } = await parseGraphQLParameters(
         request
       );
+      console.log(query, variables, operationName);
       if (query === "") {
         throw new QueryNotProvidedError("Query is not provided in request");
       }

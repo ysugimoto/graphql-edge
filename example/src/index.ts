@@ -15,15 +15,16 @@ const resolvers = {
   }
 };
 
+const handler = graphqlHandler({
+  typeDefs: schema,
+  resolvers,
+});
+
 async function handleRequest(event: FetchEvent) {
   const { request } = event;
   const url = new URL(request.url);
 
   if (url.pathname === "/graphql") {
-    const handler = graphqlHandler({
-      typeDefs: schema,
-      resolvers,
-    });
     return handler(request);
   }
   return new Response("OK", { status: 200 });
