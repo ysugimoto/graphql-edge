@@ -3,3 +3,7 @@ node_modules
 src
 tasks
 tsconfig.json
+.eslint*
+.github
+.husky
+
