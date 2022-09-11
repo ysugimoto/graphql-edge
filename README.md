@@ -83,13 +83,13 @@ $ curl -v http://localhost:7676/graphql -H "Content-Type: application/graphql" -
 # => {"data":{"books":[{"id":1,"title":"book01"},{"id":2,"title":"book02"}]}}
 ```
 
-See [example](https://github.com/ysugimoto/blob/main/example) in detail.
+See [example](https://github.com/ysugimoto/blob/main/example) in detail, and Cloudflare Workers is also supported.
 
 ## Features
 
 - [x] TypeScript Support
 - [x] Works on Fastly Compute@Edge
-- [ ] Cloudflare Workers
+- [x] Works on Cloudflare Workers
 
 ## Author
 
