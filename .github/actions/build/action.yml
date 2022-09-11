@@ -1,0 +1,21 @@
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: ".node-version"
+    - name: install dependencies
+      shell: bash
+      run: npm install
+    - name: test and lint program
+      shell: bash
+      run: |
+        npm run test
+        npm run lint
+    - name: build app
+      shell: bash
+      run: npm run build
+    - uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: ./dist
