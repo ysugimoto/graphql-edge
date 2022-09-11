@@ -85,8 +85,8 @@ $ curl -v http://localhost:7676/graphql -H "Content-Type: application/graphql" -
 
 See examples in detail:
 
-- [Fastly Compute@Edge](https://github.com/ysugimoto/blob/main/example/fastly)
-- [Cloudflare Workers](https://github.com/ysugimoto/blob/main/example/cloudflare) 
+- [Fastly Compute@Edge](https://github.com/ysugimoto/graphql-edge/tree/main/example/fastly)
+- [Cloudflare Workers](https://github.com/ysugimoto/graphql-edge/tree/main/example/cloudflare)
 
 ## Features
 
