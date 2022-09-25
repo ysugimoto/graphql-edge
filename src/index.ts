@@ -23,11 +23,13 @@ export type Option = {
   typeDefs: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resolvers: Record<string, any>;
+  errorOnEither?: boolean;
 };
 
 export function graphqlHandler({
   typeDefs,
   resolvers,
+  errorOnEither = false,
 }: Option): (request: Request) => Promise<Response> {
   const schema = makeExecutableSchema({
     typeDefs,
@@ -71,6 +73,11 @@ export function graphqlHandler({
         variableValues: variables,
         operationName,
       });
+
+      // If errorOnEither option is true, raise 500 Internal Server Error if either query failed.
+      if (errorOnEither && result.errors) {
+        throw new Error(JSON.stringify(result.errors.map(formatError)));
+      }
 
       const formatted: FormattedExecutionResult = {
         ...result,
