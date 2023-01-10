@@ -19,17 +19,25 @@ import {
   getOperationAST,
 } from "graphql";
 
+export type Hooks = {
+  response?: (body: GraphQLResponse) => GraphQLResponse;
+};
+
 export type Option = {
   typeDefs: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resolvers: Record<string, any>;
   errorOnEither?: boolean;
+  hooks?: Hooks;
 };
+
+export type GraphQLResponse = FormattedExecutionResult;
 
 export function graphqlHandler({
   typeDefs,
   resolvers,
   errorOnEither = false,
+  hooks,
 }: Option): (request: Request) => Promise<Response> {
   const schema = makeExecutableSchema({
     typeDefs,
@@ -84,7 +92,11 @@ export function graphqlHandler({
         errors: result.errors?.map(formatError),
       };
 
-      return new Response(JSON.stringify(formatted), {
+      // If hooks are provided, call it
+      const response =
+        hooks && hooks.response ? hooks.response(formatted) : formatted;
+
+      return new Response(JSON.stringify(response), {
         status: 200,
         headers: new Headers({
           "Content-Type": "application/json",
