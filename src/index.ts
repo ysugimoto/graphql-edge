@@ -62,7 +62,7 @@ export function graphqlHandler({
       const docErrors = validate(schema, doc, specifiedRules);
       if (docErrors.length > 0) {
         throw new QueryValidationError(
-          `GraphQL Validation error: ${JSON.stringify(schemaErrors)}`
+          `GraphQL Validation error: ${JSON.stringify(docErrors)}`
         );
       }
       if (request.method === "GET") {
