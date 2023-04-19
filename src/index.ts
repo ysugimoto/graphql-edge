@@ -23,21 +23,42 @@ export type Hooks = {
   response?: (body: GraphQLResponse) => GraphQLResponse;
 };
 
+export type GraphQLOperationLog = {
+  query: string | null;
+  operationName: string;
+  variables: Record<string, any>;
+  error: Error | null;
+};
+
 export type Option = {
   typeDefs: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resolvers: Record<string, any>;
   errorOnEither?: boolean;
   hooks?: Hooks;
+  logger?: (logging: GraphQLOperationLog) => void;
 };
 
 export type GraphQLResponse = FormattedExecutionResult;
+
+const operationLog = (
+  query: string | null,
+  operationName: string,
+  variables: Record<string, any>,
+  error: Error | null
+) => ({
+  query,
+  operationName,
+  variables,
+  error,
+});
 
 export function graphqlHandler({
   typeDefs,
   resolvers,
   errorOnEither = false,
   hooks,
+  logger,
 }: Option): (request: Request) => Promise<Response> {
   const schema = makeExecutableSchema({
     typeDefs,
@@ -56,21 +77,38 @@ export function graphqlHandler({
         request
       );
       if (query === "") {
-        throw new QueryNotProvidedError("Query is not provided in request");
+        const error = new QueryNotProvidedError(
+          "Query is not provided in request"
+        );
+        logger &&
+          logger(
+            operationLog(query, operationName || "", variables || {}, error)
+          );
+        throw error;
       }
       const doc = parse(new Source(query ?? "", "GraphQL request"));
       const docErrors = validate(schema, doc, specifiedRules);
       if (docErrors.length > 0) {
-        throw new QueryValidationError(
+        const error = new QueryValidationError(
           `GraphQL Validation error: ${JSON.stringify(docErrors)}`
         );
+        logger &&
+          logger(
+            operationLog(query, operationName || "", variables || {}, error)
+          );
+        throw error;
       }
       if (request.method === "GET") {
         const op = getOperationAST(doc, operationName);
         if (op && op.operation !== "query") {
-          throw new UnexpectedOperationError(
+          const error = new UnexpectedOperationError(
             `Operation ${op.operation} can accept only from POST request`
           );
+          logger &&
+            logger(
+              operationLog(query, operationName || "", variables || {}, error)
+            );
+          throw error;
         }
       }
 
@@ -84,7 +122,12 @@ export function graphqlHandler({
 
       // If errorOnEither option is true, raise 500 Internal Server Error if either query failed.
       if (errorOnEither && result.errors) {
-        throw new Error(JSON.stringify(result.errors.map(formatError)));
+        const error = new Error(JSON.stringify(result.errors.map(formatError)));
+        logger &&
+          logger(
+            operationLog(query, operationName || "", variables || {}, error)
+          );
+        throw error;
       }
 
       const formatted: FormattedExecutionResult = {
@@ -95,6 +138,9 @@ export function graphqlHandler({
       // If hooks are provided, call it
       const response =
         hooks && hooks.response ? hooks.response(formatted) : formatted;
+
+      logger &&
+        logger(operationLog(query, operationName || "", variables || {}, null));
 
       return new Response(JSON.stringify(response), {
         status: 200,
