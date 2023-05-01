@@ -8,6 +8,7 @@ import {
   UnexpectedOperationError,
   MethodNotAllowedError,
 } from "./error";
+import { GraphQLLogger, discardLogger } from "./logging";
 import {
   formatError,
   validateSchema,
@@ -23,35 +24,16 @@ export type Hooks = {
   response?: (body: GraphQLResponse) => GraphQLResponse;
 };
 
-export type GraphQLOperationLog = {
-  query: string | null;
-  operationName: string;
-  variables: Record<string, any>;
-  error: Error | null;
-};
-
 export type Option = {
   typeDefs: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resolvers: Record<string, any>;
   errorOnEither?: boolean;
   hooks?: Hooks;
-  logger?: (logging: GraphQLOperationLog) => void;
+  logger?: GraphQLLogger;
 };
 
 export type GraphQLResponse = FormattedExecutionResult;
-
-const operationLog = (
-  query: string | null,
-  operationName: string,
-  variables: Record<string, any>,
-  error: Error | null
-) => ({
-  query,
-  operationName,
-  variables,
-  error,
-});
 
 export function graphqlHandler({
   typeDefs,
@@ -71,7 +53,11 @@ export function graphqlHandler({
     );
   }
 
+  const logging = logger || discardLogger;
+
   return async (request: Request) => {
+    const start = Date.now();
+
     try {
       const { query, variables, operationName } = await parseGraphQLParameters(
         request
@@ -80,10 +66,13 @@ export function graphqlHandler({
         const error = new QueryNotProvidedError(
           "Query is not provided in request"
         );
-        logger &&
-          logger(
-            operationLog(query, operationName || "", variables || {}, error)
-          );
+        logging({
+          query,
+          operationName: operationName || "",
+          variables: variables || {},
+          error: error,
+          elapsedTime: Date.now() - start,
+        });
         throw error;
       }
       const doc = parse(new Source(query ?? "", "GraphQL request"));
@@ -92,10 +81,13 @@ export function graphqlHandler({
         const error = new QueryValidationError(
           `GraphQL Validation error: ${JSON.stringify(docErrors)}`
         );
-        logger &&
-          logger(
-            operationLog(query, operationName || "", variables || {}, error)
-          );
+        logging({
+          query,
+          operationName: operationName || "",
+          variables: variables || {},
+          error: error,
+          elapsedTime: Date.now() - start,
+        });
         throw error;
       }
       if (request.method === "GET") {
@@ -104,10 +96,13 @@ export function graphqlHandler({
           const error = new UnexpectedOperationError(
             `Operation ${op.operation} can accept only from POST request`
           );
-          logger &&
-            logger(
-              operationLog(query, operationName || "", variables || {}, error)
-            );
+          logging({
+            query,
+            operationName: operationName || "",
+            variables: variables || {},
+            error: error,
+            elapsedTime: Date.now() - start,
+          });
           throw error;
         }
       }
@@ -123,10 +118,13 @@ export function graphqlHandler({
       // If errorOnEither option is true, raise 500 Internal Server Error if either query failed.
       if (errorOnEither && result.errors) {
         const error = new Error(JSON.stringify(result.errors.map(formatError)));
-        logger &&
-          logger(
-            operationLog(query, operationName || "", variables || {}, error)
-          );
+        logging({
+          query,
+          operationName: operationName || "",
+          variables: variables || {},
+          error: error,
+          elapsedTime: Date.now() - start,
+        });
         throw error;
       }
 
@@ -139,8 +137,13 @@ export function graphqlHandler({
       const response =
         hooks && hooks.response ? hooks.response(formatted) : formatted;
 
-      logger &&
-        logger(operationLog(query, operationName || "", variables || {}, null));
+      logging({
+        query,
+        operationName: operationName || "",
+        variables: variables || {},
+        error: null,
+        elapsedTime: Date.now() - start,
+      });
 
       return new Response(JSON.stringify(response), {
         status: 200,
