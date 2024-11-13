@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@cloudflare/workers-types": "^3.16.0",
-    "@fastly/js-compute": "^0.5.2",
+    "@fastly/js-compute": "^1.9.0",
     "@graphql-tools/schema": "^9.0.3",
     "graphql": "^16.6.0"
   },
