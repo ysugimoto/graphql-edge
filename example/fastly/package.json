@@ -1,7 +1,7 @@
 {
     "author": "oss@fastly.com",
     "dependencies": {
-        "@fastly/js-compute": "^0.3.0",
+        "@fastly/js-compute": "^3.3.1",
         "graphql-edge": "../../"
     },
     "devDependencies": {
@@ -15,7 +15,7 @@
         "webpack-graphql-loader": "^1.0.2"
     },
     "engines": {
-        "node": "^16"
+        "node": "^22"
     },
     "license": "MIT",
     "main": "src/index.js",
